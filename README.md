@@ -70,7 +70,7 @@ Change directory to MyNebulaProject/ and create a hidden directory for all the `
 cd  MyNebulaProject/ && mkdir .origin
 ```
 
-Change directory to .origin/ and create a new `.neb` file with the specified naming convention:
+Change directory to `.origin/` and create a new `.neb` file with the specified naming convention:
 ```bash
 cd .origin/ && touch "[src\pages\{{PageName}}.html].neb"
 ```
@@ -84,9 +84,9 @@ Inside the `[src\pages\{{PageName}}.html].neb` file:
 <html>
 ```
 
-Run the CLI tool with the specified configuration directory `.origin` and the `-p` flag to indicate propagation mode:
+Run the CLI tool with the specified configuration directory `.origin/` and the `-p` flag to indicate propagation mode:
 ```bash
-neb .origin -p
+neb .origin/ -p
 
 ...
 
