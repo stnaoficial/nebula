@@ -54,5 +54,46 @@ After executing these commands, you may need to restart your bash to apply the c
 source ~/.bashrc
 ```
 
+# Usage example
+
+Only `.neb` files are supported.
+
+You must add the destination of the `.neb` file inside `[]`.
+
+Create a directory for your Nebula project named MyNebulaProject:
+```bash
+mkdir MyNebulaProject
+```
+
+Change directory to MyNebulaProject/ and create a hidden directory for all the `.neb` files:
+```bash
+cd  MyNebulaProject/ && mkdir .neb
+```
+
+Change directory to .neb/ and create a new `.neb` file with the specified naming convention:
+```bash
+cd .neb/ && touch "[src\pages\{{PageName}}.html].neb"
+```
+
+Inside the `[src\pages\{{PageName}}.html].neb` file:
+```html
+<html>
+    <body>
+        <h1>{{PageTitle}}</h1>
+    </body>
+<html>
+```
+
+Run the CLI tool with the specified configuration directory (.neb) and the `-p` flag to indicate propagation mode:
+```bash
+neb .neb -p
+
+...
+
+Enter a value for variable [PageName]: HomePage
+Enter a value for variable [PageTitle]: My HomePage
+```
+This will output a file in `/src/pages/HomePage.html`, utilizing the entered values for `PageName` and `PageTitle`.
+
 ---
 ![image info](./docs/Banner%201.jpg)

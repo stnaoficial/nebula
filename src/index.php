@@ -40,7 +40,7 @@ if (\php_sapi_name() === "cli") {
 
 } else {
     echo \sprintf(
-        "%s | This script is only supported via the CLI." . \PHP_EOL,
+        "This script is only supported via the CLI." . \PHP_EOL,
         Nebula::TITLE
     );
 
@@ -96,9 +96,9 @@ if ($argc < 2) {
  * 
  * @return void
  */
-\set_exception_handler(function ($exception) {    
+\set_exception_handler(function ($exception) {
     echo \sprintf(
-        "Exception: %s: %s" . str_repeat(\PHP_EOL, 2),
+        \PHP_EOL . "exception: %s: %s" . str_repeat(\PHP_EOL, 2),
         $exception->getFile(), $exception->getLine()
     );
 

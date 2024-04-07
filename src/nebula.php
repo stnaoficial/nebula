@@ -121,8 +121,16 @@ final class Nebula
 
         $this->fetchVariables($destname);
 
+        if (\filesize($filename) == 0) {
+            throw new \UnexpectedValueException(\sprintf(
+                "File %s is empty.", $filename
+            ));
+        }
+        
         if (!$contents = \file_get_contents($filename)) {
-            throw new \UnexpectedValueException("Failed to read file.");
+            throw new \UnexpectedValueException(\sprintf(
+                "Failed to read file %s.", $filename
+            ));
         }
 
         if ($deep) {    
