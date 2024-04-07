@@ -1,4 +1,4 @@
-#!usr/bin/env bash
+#!/bin/bash
 
 # Removes the alias from the user's .bashrc file.
 sed -i '/alias nebula=/d' ~/.bashrc

@@ -1,4 +1,4 @@
-#!usr/bin/env bash
+#!/bin/bash
 
 # Installs the alias in the user's .bashrc file.
 echo -e "\nalias nebula=\"php $HOME/.nebula/console\"" >> ~/.bashrc
