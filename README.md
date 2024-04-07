@@ -2,14 +2,19 @@
 
 # Getting started 🔭
 
-First of all, you must have PHP 8.3.4 or higher installed in your machine.
-This is the language behind the tool.
+First of all, you must have PHP 8.3.4 or higher installed on your machine. This is the language behind the tool.
 
 # Installation
 
+### One-line option
+You can install by running this one-line command option (not recommended):
+```bash
+git clone git@github.com:stnaoficial/nebula.git .nebula && mv .nebula ~ && ~/.nebula/bin/install.sh
+```
+
 ### 1. Clone the repository
 
-Clone the repository and move to the default destination:
+Clone the repository and move it to the default destination:
 ```bash
 git clone git@github.com:stnaoficial/nebula.git .nebula && mv .nebula ~
 ```
@@ -27,12 +32,21 @@ source ~/.bashrc
 
 And that's it!
 
-You can now execute `nebula --help` for a more specific information about the usage of the tool. 
+You can now execute `nebula --help` for more specific information about the usage of the tool. 
 
-# Unistallation
-For unistall the whole tool you can run this single command:
+# Uninstallation
+
+### One-line option
+You can uninstall by running this one-line command option (not recommended):
 ```bash
-sed -i '/alias nebula=/d' ~/.bashrc && sed -i '/alias neb=/d' ~/.bashrc && rm -rf ~/.nebula
+git clone git@github.com:stnaoficial/nebula.git .nebula && mv .nebula ~ && ~/.nebula/bin/uninstall.sh
+```
+
+### 1. Remove the CLI aliases and remove the installed tool directory
+
+To uninstall the whole tool, you can run this single command:
+```bash
+sed -i "" "/alias nebula=/d" ~/.bashrc && sed -i "" "/alias neb=/d" ~/.bashrc && rm -rf ~/.nebula
 ```
 
 After executing these commands, you may need to restart your bash to apply the changes:
