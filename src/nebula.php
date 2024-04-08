@@ -2,11 +2,29 @@
 
 final class Nebula
 {
-    public const TITLE         = "Nebula 🔭";
-    public const DESCRIPTION   = "A CLI tool to easily suppress and propagate file descendants.";
-    public const SHORT_VERSION = "0.1.0";
-    public const LONG_VERSION  = "beta-0.1.0 (2024-04-07)";
+    /**
+     * The title of the tool.
+     */
+    public const TITLE = "Nebula";
 
+    /**
+     * The description of the tool.
+     */
+    public const DESCRIPTION = "A CLI tool to easily suppress and propagate file descendants.";
+
+    /**
+     * The short version of the tool.
+     */
+    public const SHORT_VERSION = "0.1.0";
+
+    /**
+     * The long version of the tool.
+     */
+    public const LONG_VERSION = "beta-0.1.0 (2024-04-07)";
+
+    /**
+     * The extension of the files.
+     */
     private const FILE_EXTENSION = "neb";
 
     /**
@@ -25,7 +43,8 @@ final class Nebula
      * @param string $path The target path.
      * @param bool   $deep Whether to deeply fetch variables.
      * 
-     * @throws \InvalidArgumentException If the path is not a file or directory.
+     * @throws \UnexpectedValueException  If an error occurs when interpretating
+     *                                    some file or directory.
      * 
      * @return void
      */
@@ -50,18 +69,19 @@ final class Nebula
      * 
      * @param string $name The name of the variable.
      * 
-     * @throws \UnexpectedValueException If failed to read the value.
+     * @throws \UnexpectedValueException  If failed  to  assign  a value to  the
+     *                                    variable.
      * 
      * @return string Returns the variable value.
      */
     private function askVariable($name)
     {
-        \fwrite(\STDOUT, "Enter a value for variable [$name]: ");
+        \fwrite(\STDOUT, \sprintf("Enter a value for variable [%s]: ", $name));
 
         if (!$value = \fgets(\STDIN)) {
-            throw new \UnexpectedValueException(
-                "Failed to assign value to variable."
-            );
+            throw new \UnexpectedValueException(\sprintf(
+                "Failed to assign a value to variable [%s].", $name
+            ));
         }
 
         return \trim($value);
@@ -100,6 +120,8 @@ final class Nebula
      * @param bool   $deep     Whether to deeply fetch variables.
      * 
      * @throws \UnexpectedValueException If the file is not of the correct type.
+     * @throws \UnexpectedValueException If failed to parse the destination name.
+     * @throws \InvalidArgumentException If file is empty.
      * @throws \InvalidArgumentException If failed to read the file.
      * 
      * @return void
@@ -117,7 +139,13 @@ final class Nebula
             "", \basename($filename)
         );
 
-        $destname = \str_replace("\\", \DIRECTORY_SEPARATOR, $destname);
+        $destname = \trim(\str_replace("\\", \DIRECTORY_SEPARATOR, $destname));
+
+        if (empty($destname)) {
+            throw new \UnexpectedValueException(\sprintf(
+                "Failed to parse destination name of file %s.", $filename
+            ));
+        }
 
         $this->fetchVariables($destname);
 
@@ -145,6 +173,9 @@ final class Nebula
      * 
      * @param string $dirname The path to the directory.
      * @param bool   $deep    Whether to deeply fetch variables.
+     * 
+     * @throws \UnexpectedValueException  If an error occurs when interpretating
+     *                                    the directory.
      * 
      * @return void
      */
@@ -174,7 +205,7 @@ final class Nebula
 
                 $destname = \str_replace($match, $value, $destname);                    
 
-                if (file_exists($destname)) {
+                if (\file_exists($destname)) {
                     \unlink($destname);
                 }
             }
@@ -205,10 +236,8 @@ final class Nebula
                     $contents = \str_replace($match, $value, $contents);
                 }
 
-                $dirname = dirname($destname);
+                $dirname = \dirname($destname);
 
-                // Creats the directory if it doesn't exist.
-                // It performs recursive creation if needed.
                 if (!\is_dir($dirname)) {
                     \mkdir($dirname, recursive: true);
                 }
