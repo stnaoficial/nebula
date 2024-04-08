@@ -98,7 +98,7 @@ if ($argc < 2) {
  */
 \set_exception_handler(function ($exception) {
     echo \sprintf(
-        \PHP_EOL . "exception: %s: %s" . str_repeat(\PHP_EOL, 2),
+        "exception: %s: %s" . str_repeat(\PHP_EOL, 2),
         $exception->getFile(), $exception->getLine()
     );
 
