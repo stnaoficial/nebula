@@ -68,12 +68,12 @@ mkdir MyNebulaProject
 
 Change directory to MyNebulaProject/ and create a hidden directory for all the `.neb` files:
 ```bash
-cd  MyNebulaProject/ && mkdir .neb
+cd  MyNebulaProject/ && mkdir .origin
 ```
 
-Change directory to .neb/ and create a new `.neb` file with the specified naming convention:
+Change directory to `.origin/` and create a new `.neb` file with the specified naming convention:
 ```bash
-cd .neb/ && touch "[src\pages\{{PageName}}.html].neb"
+cd .origin/ && touch "[src\pages\{{PageName}}.html].neb"
 ```
 
 Inside the `[src\pages\{{PageName}}.html].neb` file:
@@ -85,9 +85,9 @@ Inside the `[src\pages\{{PageName}}.html].neb` file:
 <html>
 ```
 
-Run the CLI tool with the specified configuration directory (.neb) and the `-p` flag to indicate propagation mode:
+Run the CLI tool with the specified configuration directory `.origin/` and the `-p` flag to indicate propagation mode:
 ```bash
-neb .neb -p
+neb .origin/ -p
 
 ...
 
