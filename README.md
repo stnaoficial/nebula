@@ -95,3 +95,5 @@ Enter a value for variable [PageName]: HomePage
 Enter a value for variable [PageTitle]: My HomePage
 ```
 This will output a file in `/src/pages/HomePage.html`, utilizing the entered values for `PageName` and `PageTitle`.
+
+![image info](./docs/image.png)
