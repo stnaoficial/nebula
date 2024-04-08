@@ -40,7 +40,7 @@ You can now execute `nebula --help` for more specific information about the usag
 ### One-line option
 You can uninstall by running this one-line command option (not recommended):
 ```bash
-git clone git@github.com:stnaoficial/nebula.git .nebula && mv .nebula ~ && ~/.nebula/bin/uninstall.sh
+~/.nebula/bin/uninstall.sh
 ```
 
 ### 1. Remove the CLI aliases and remove the installed tool directory
