@@ -1,4 +1,5 @@
-![image info](./docs/Banner%202.jpg)
+![image info](./docs/banner.jpg)
+---
 
 # Getting started 🔭
 
@@ -94,6 +95,3 @@ Enter a value for variable [PageName]: HomePage
 Enter a value for variable [PageTitle]: My HomePage
 ```
 This will output a file in `/src/pages/HomePage.html`, utilizing the entered values for `PageName` and `PageTitle`.
-
----
-![image info](./docs/Banner%201.jpg)
