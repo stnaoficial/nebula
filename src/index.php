@@ -1,5 +1,6 @@
 <?php declare(strict_types=1);
 
+require_once __DIR__ . "/console.php";
 require_once __DIR__ . "/nebula.php";
 
 // Defines the default exit code for successes.
@@ -23,14 +24,13 @@ if (!\defined("INDENT_SIZE")) {
  * @return void
  */
 function print_cli_banner() {
-    echo \sprintf(
-        "%s | %s" . str_repeat(\PHP_EOL, 2), Nebula::TITLE, Nebula::LONG_VERSION
-    );
-
-    echo \sprintf(
-        str_repeat(" ", INDENT_SIZE) . "%s" . str_repeat(\PHP_EOL, 2),
-        Nebula::DESCRIPTION
-    );
+    Console::writeln(\sprintf(
+        "%s | %s", Nebula::TITLE, Nebula::LONG_VERSION
+    ), 2);
+    
+    Console::writeln(\sprintf(
+        str_repeat(" ", INDENT_SIZE) . "%s", Nebula::DESCRIPTION
+    ), 2);
 }
 
 // Prints the CLI banner to the user if it is executed via the CLI.
@@ -39,10 +39,9 @@ if (\php_sapi_name() === "cli") {
     print_cli_banner();
 
 } else {
-    echo \sprintf(
-        "This script is only supported via the CLI." . \PHP_EOL,
-        Nebula::TITLE
-    );
+    Console::writeln(\sprintf(
+        "This script is only supported via the CLI.", Nebula::TITLE
+    ));
 
     exit(EXIT_FAILURE);
 }
@@ -52,21 +51,18 @@ if (\php_sapi_name() === "cli") {
  * 
  * It will output the usage message and exit with the success code.
  * 
- * @param string $filename The name of the file being executed.
- * 
  * @return void
  */
-function print_cli_usage($filename) {
-    echo \sprintf(
-        "usage: <path> [-h | --help] [-s | --suppress] [-p | --propagate]" .
-        str_repeat(\PHP_EOL, 2), $filename
-    );
+function print_cli_usage() {
+    Console::writeln(
+        "usage: <path> [-h | --help] [-s | --suppress] [-p | --propagate]"
+    , 2);
 }
 
 // Validates the  minimum number of arguments  passed via  the CLI.  The minimum
 // number of arguments is 2.
 if ($argc < 2) {
-    print_cli_usage($argv[0]);
+    print_cli_usage();
     exit(EXIT_FAILURE);
 }
 
@@ -97,12 +93,11 @@ if ($argc < 2) {
  * @return void
  */
 \set_exception_handler(function ($exception) {
-    echo \sprintf(
-        "exception: %s: %s" . str_repeat(\PHP_EOL, 2),
-        $exception->getFile(), $exception->getLine()
-    );
+    Console::error(\sprintf(
+        "exception: %s: %s", $exception->getFile(), $exception->getLine()
+    ), 2);
 
-    echo str_repeat(" ", INDENT_SIZE) . $exception->getMessage() . \PHP_EOL;
+    Console::error(str_repeat(" ", INDENT_SIZE) . $exception->getMessage());
 
     exit(EXIT_FAILURE);
 });
@@ -113,7 +108,7 @@ $arg = $argv[$argc - 1];
 // Prints the usage if the user wants help. Reads the last argument from the CLI
 // and determines if it is -h or --help.
 if ($arg === "-h" || $arg === "--help") {
-    print_cli_usage($argv[0]);
+    print_cli_usage();
     exit(EXIT_SUCCESS);
 }
 
@@ -126,6 +121,6 @@ if ($arg === "-s" || $arg === "--suppress") {
     (new Nebula($argv[1]))->propagate();
 
 } else {
-    print_cli_usage($argv[0]);
+    print_cli_usage();
     exit(EXIT_FAILURE);
 }

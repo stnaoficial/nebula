@@ -3,6 +3,11 @@
 final class Nebula
 {
     /**
+     * @property Console $console The console instance.
+     */
+    private $console;
+
+    /**
      * The title of the tool.
      */
     public const TITLE = "Nebula";
@@ -28,6 +33,11 @@ final class Nebula
     private const FILE_EXTENSION = "neb";
 
     /**
+     * The regex for matching variables.
+     */
+    private const MATCH_REGEX = "/{{(.*?)}}/s";
+
+    /**
      * @property <string, string> $files An array of files.
      */
     private $files;
@@ -50,6 +60,8 @@ final class Nebula
      */
     public function __construct($path, $deep = true)
     {
+        $this->console = new Console;
+
         if (\is_dir($path)) {
             $this->addDirectory($path, $deep);
 
@@ -76,27 +88,27 @@ final class Nebula
      */
     private function askVariable($name)
     {
-        \fwrite(\STDOUT, \sprintf("Enter a value for variable [%s]: ", $name));
+        $question = \sprintf("Enter a value for variable [%s]: ", $name);
 
-        if (!$value = \fgets(\STDIN)) {
+        if (!$answer = $this->console->ask($question)) {
             throw new \UnexpectedValueException(\sprintf(
                 "Failed to assign a value to variable [%s].", $name
             ));
         }
 
-        return \trim($value);
+        return \trim($answer);
     }
 
     /**
-     * Fetches variables in a given source string.
+     * Loads variables in a given source string.
      * 
      * @param string $source The source string.
      * 
      * @return void
      */
-    private function fetchVariables($source)
+    private function loadVariables($source)
     {
-        \preg_match_all("/{{(.*?)}}/s", $source, $matches);
+        \preg_match_all(self::MATCH_REGEX, $source, $matches);
 
         if (empty($matches)) {
             return;
@@ -111,6 +123,19 @@ final class Nebula
 
             $this->vars[$match] = $this->askVariable($name);
         }
+    }
+
+    /**
+     * Checks if the source string contains variables.
+     * 
+     * @param string $source The source string.
+     * 
+     * @return bool
+     */
+    private function containsVariables($source)
+    {
+        $matches = \preg_match_all(self::MATCH_REGEX, $source);
+        return $matches !== false && $matches > 0;
     }
 
     /**
@@ -147,7 +172,7 @@ final class Nebula
             ));
         }
 
-        $this->fetchVariables($destname);
+        $this->loadVariables($destname);
 
         if (\filesize($filename) == 0) {
             throw new \UnexpectedValueException(\sprintf(
@@ -162,7 +187,7 @@ final class Nebula
         }
 
         if ($deep) {    
-            $this->fetchVariables($contents);
+            $this->loadVariables($contents);
         }
 
         $this->files[$destname] = $contents;
@@ -197,6 +222,10 @@ final class Nebula
      */
     public function suppress()
     {
+        $suppressed = [];
+
+        $this->console->writeln();
+
         foreach (\array_keys($this->files) as $destname) {
             foreach ($this->vars as $match => $value) {
                 if (!\str_contains($destname, $match)) {
@@ -206,10 +235,22 @@ final class Nebula
                 $destname = \str_replace($match, $value, $destname);                    
 
                 if (\file_exists($destname)) {
+                    $this->console->writeln(\sprintf(
+                        "Suppressing %s", $destname
+                    ));
+
+                    $suppressed[$destname] = true;
+
                     \unlink($destname);
                 }
             }
         }
+
+        $this->console->writeln();
+
+        $this->console->writeln(\sprintf(
+            "%s/%s files suppressed.", \count($suppressed), \count($this->files)
+        ));
     }
 
     /**
@@ -219,13 +260,17 @@ final class Nebula
      */
     public function propagate()
     {
+        $propagated = [];
+
+        $this->console->writeln();
+
         foreach ($this->files as $destname => $contents) {
             foreach ($this->vars as $match => $value) {
                 $replace_destname = \str_contains($destname, $match);
                 $replace_contents = \str_contains($contents, $match);
 
                 if (!$replace_destname && !$replace_contents) {
-                    continue; 
+                    continue;
                 }
 
                 if ($replace_destname) {
@@ -236,14 +281,34 @@ final class Nebula
                     $contents = \str_replace($match, $value, $contents);
                 }
 
+                // Skip non-replaced file destinations.
+                // TODO: investigate if this is necessary.
+                if ($this->containsVariables($destname)) {
+                    continue;
+                }
+
                 $dirname = \dirname($destname);
 
                 if (!\is_dir($dirname)) {
                     \mkdir($dirname, recursive: true);
                 }
 
+                if (!isset($propagated[$destname])) {
+                    $this->console->writeln(\sprintf(
+                        "Propagating %s", $destname
+                    ));
+
+                    $propagated[$destname] = true;
+                }
+
                 \file_put_contents($destname, $contents);
             }
         }
+
+        $this->console->writeln();
+
+        $this->console->writeln(\sprintf(
+            "%s/%s files propagated.", \count($propagated), \count($this->files)
+        ));
     }
 }
