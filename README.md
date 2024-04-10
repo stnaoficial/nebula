@@ -23,7 +23,7 @@ git clone git@github.com:stnaoficial/nebula.git .nebula && mv .nebula ~
 ### 2. Configure the CLI aliases
 Configure the CLI aliases in the bash configuration file:
 ```bash
-echo -e "\nalias nebula=\"php $HOME/.nebula/console\"" >> ~/.bashrc && echo "alias neb=\"nebula\"" >> ~/.bashrc
+echo -e "\nalias nebula=\"php $HOME/.nebula/index.php\"" >> ~/.bashrc && echo "alias neb=\"nebula\"" >> ~/.bashrc
 ```
 
 After executing these commands, you may need to restart your bash to apply the changes:
@@ -68,12 +68,12 @@ mkdir MyNebulaProject
 
 Change directory to MyNebulaProject/ and create a hidden directory for all the `.neb` files:
 ```bash
-cd  MyNebulaProject/ && mkdir .origin
+cd  MyNebulaProject/ && mkdir .nebula
 ```
 
-Change directory to `.origin/` and create a new `.neb` file with the specified naming convention:
+Change directory to `.nebula/` and create a new `.neb` file with the specified naming convention:
 ```bash
-cd .origin/ && touch "[src\pages\{{PageName}}.html].neb"
+cd .nebula/ && touch "[src\pages\{{PageName}}.html].neb"
 ```
 
 Inside the `[src\pages\{{PageName}}.html].neb` file:
@@ -85,9 +85,9 @@ Inside the `[src\pages\{{PageName}}.html].neb` file:
 <html>
 ```
 
-Run the CLI tool with the specified configuration directory `.origin/` and the `-p` flag to indicate propagation mode:
+Run the CLI tool with the specified configuration directory `.nebula/` followed by `prop` to indicate propagation mode:
 ```bash
-neb .origin/ -p
+neb .nebula/ prop
 
 ...
 
@@ -95,5 +95,3 @@ Enter a value for variable [PageName]: HomePage
 Enter a value for variable [PageTitle]: My HomePage
 ```
 This will output a file in `/src/pages/HomePage.html`, utilizing the entered values for `PageName` and `PageTitle`.
-
-![image info](./docs/image.png)
