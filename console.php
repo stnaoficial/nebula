@@ -1,46 +1,27 @@
 <?php declare(strict_types=1);
 
-require_once __DIR__ . "/console.php";
-require_once __DIR__ . "/nebula.php";
-
-// Defines the default exit code for successes.
-if (!\defined("EXIT_SUCCESS")) {
-    \define("EXIT_SUCCESS", 0);
-}
-
-// Defines the default exit code for failures.
-if (!\defined("EXIT_FAILURE")) {
-    \define("EXIT_FAILURE", 1);
-}
-
-// Defines the default indent size.
-if (!\defined("INDENT_SIZE")) {
-    \define("INDENT_SIZE", 4);
-}
+use Nebula\Algorithm;
+use Nebula\Support\Console as ConsoleSupport;
 
 /**
- * Prints the CLI banner to the user.
+ * Prints the CLI version to the user.
  * 
  * @return void
  */
-function print_cli_banner() {
-    Console::writeln(\sprintf(
-        "%s | %s", Nebula::TITLE, Nebula::LONG_VERSION
-    ), 2);
-    
-    Console::writeln(\sprintf(
-        str_repeat(" ", INDENT_SIZE) . "%s", Nebula::DESCRIPTION
+function print_cli_version() {
+    ConsoleSupport::writeln(\sprintf(
+        "%s | %s", PROJECT_TITLE, PROJECT_LONG_VERSION
     ), 2);
 }
 
-// Prints the CLI banner to the user if it is executed via the CLI.
+// Prints the CLI version to the user if it is executed via the CLI.
 // Otherwise, it will exit with the failure code and an error message.
 if (\php_sapi_name() === "cli") {
-    print_cli_banner();
+    print_cli_version();
 
 } else {
-    Console::writeln(\sprintf(
-        "This script is only supported via the CLI.", Nebula::TITLE
+    ConsoleSupport::writeln(\sprintf(
+        "This script is only supported via the CLI.", PROJECT_TITLE
     ));
 
     exit(EXIT_FAILURE);
@@ -54,8 +35,27 @@ if (\php_sapi_name() === "cli") {
  * @return void
  */
 function print_cli_usage() {
-    Console::writeln(
-        "usage: <path> [-h | --help] [-s | --suppress] [-p | --propagate]"
+    ConsoleSupport::writeln(
+        "usage: <path> [-h | --help]"
+    , 2);
+
+    ConsoleSupport::writeln("start propagating and suppressing files");
+
+    ConsoleSupport::writeln(
+        str_repeat(" ", INDENT_SIZE) .
+        "prop, propagate   Propagates files to their destinations"
+    );
+
+    ConsoleSupport::writeln(
+        str_repeat(" ", INDENT_SIZE) .
+        "sup, suppress     Suppresses files from their destinations"
+    , 2);
+
+    ConsoleSupport::writeln("configure your nebula directory");
+
+    ConsoleSupport::writeln(
+        str_repeat(" ", INDENT_SIZE) .
+        "config            Creates a new supernova configuration file"
     , 2);
 }
 
@@ -93,16 +93,21 @@ if ($argc < 2) {
  * @return void
  */
 \set_exception_handler(function ($exception) {
-    Console::error(\sprintf(
+    ConsoleSupport::errorln();
+
+    ConsoleSupport::errorln(\sprintf(
         "exception: %s: %s", $exception->getFile(), $exception->getLine()
     ), 2);
 
-    Console::error(str_repeat(" ", INDENT_SIZE) . $exception->getMessage());
+    ConsoleSupport::errorln(
+        str_repeat(" ", INDENT_SIZE) .
+        $exception->getMessage()
+    );
 
     exit(EXIT_FAILURE);
 });
 
-// Gets the last argument from the CLI.
+// Gets the last argument from the CLI as the mandatory argument.
 $arg = $argv[$argc - 1];
 
 // Prints the usage if the user wants help. Reads the last argument from the CLI
@@ -112,15 +117,29 @@ if ($arg === "-h" || $arg === "--help") {
     exit(EXIT_SUCCESS);
 }
 
+$algo = new Algorithm();
+
+/** @var string $path The target path to propagate or suppress. */
+$path = $argv[1];
+
+// Determines if the user wants to create a new supernova configuration file.
+if ($arg === "config") {
+    $algo->createConfigurationFile($path);
+}
+
 // Determines  if the user wants to propagate or  suppress the data. By default,
 // the algorithm will propagate the data.
-if ($arg === "-s" || $arg === "--suppress") {
-    (new Nebula($argv[1], false))->suppress();
+else if (\in_array($arg ,["sup", "suppress"])) {
+    $algo->consume($path, false);
+    $algo->suppress();
 
-} else if ($arg === "-p" || $arg === "--propagate") {
-    (new Nebula($argv[1]))->propagate();
+} else if (\in_array($arg, ["prop", "propagate"])) {
+    $algo->consume($path);
+    $algo->propagate();
+}
 
-} else {
+// Prints the usage if the user enters an invalid argument.
+else {
     print_cli_usage();
     exit(EXIT_FAILURE);
 }

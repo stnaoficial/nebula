@@ -1,5 +1,7 @@
 <?php
 
+namespace Nebula\Support;
+
 final class Console
 {
     /**
@@ -12,6 +14,19 @@ final class Console
     public static function error($message)
     {
         \fwrite(\STDERR, $message);
+    }
+
+    /**
+     * Outputs an error message to the user with a new line.
+     * 
+     * @param string $message The message to output.
+     * @param int    $break   The number of new lines to add.
+     * 
+     * @return void
+     */
+    public static function errorln($message = "", $break = 1)
+    {
+        self::error($message . \str_repeat(\PHP_EOL, $break));
     }
 
     /**
@@ -36,7 +51,7 @@ final class Console
      */
     public static function writeln($message = "", $break = 1)
     {
-        self::write($message . str_repeat(\PHP_EOL, $break));
+        self::write($message . \str_repeat(\PHP_EOL, $break));
     }
 
     /**
